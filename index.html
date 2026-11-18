@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIS-ERP Core | Sistem Informasi Akuntansi & Basis Data Relasional</title>
+  <style>
+    :root {
+      --bg-app: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-sidebar: #0f172a;
+      --bg-sidebar-hover: #1e293b;
+      --bg-subtle: #f8fafc;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-inverse: #f8fafc;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --success: #16a34a;
+      --success-soft: #f0fdf4;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 8px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Layout Shell */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background-color: var(--bg-sidebar);
+      color: var(--text-inverse);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 1px solid #1e293b;
+    }
+
+    .brand {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .brand-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-badge {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      background: var(--primary);
+      color: #fff;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .brand-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
+    }
+
+    .nav-group {
+      padding: 1rem 0.75rem;
+      flex: 1;
+    }
+
+    .nav-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      padding: 0.5rem 0.75rem;
+      font-weight: 600;
+    }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+      border: none;
+      color: #cbd5e1;
+      padding: 0.65rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      margin-bottom: 0.25rem;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-btn:hover {
+      background-color: var(--bg-sidebar-hover);
+      color: #ffffff;
+    }
+
+    .nav-btn.active {
+      background-color: var(--primary);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .nav-count {
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+    }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid #1e293b;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      margin-right: 6px;
+    }
+
+    /* Main Content */
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .topbar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .page-desc {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .content-container {
+      padding: 1.5rem 1.75rem;
+      max-width: 1360px;
+      width: 100%;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-top: 0.35rem;
+      font-family: var(--font-mono);
+    }
+
+    .kpi-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Cards & Panels */
+    .panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: var(--bg-subtle);
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .panel-body {
+      padding: 1.25rem;
+    }
+
+    /* Forms & Controls */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text-main);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .form-control[readonly] {
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .hint-box {
+      background: var(--primary-soft);
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      border-color: var(--border-strong);
+      color: var(--text-main);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-subtle);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .btn-warning {
+      background: var(--warning-soft);
+      border-color: #fde68a;
+      color: #92400e;
+    }
+    .btn-warning:hover {
+      background: #fef3c7;
+    }
+
+    .btn-sm {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.75rem;
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th {
+      background: var(--bg-subtle);
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-warning {
+      background: var(--warning-soft);
+      color: var(--warning);
+      border: 1px solid #fde68a;
+    }
+
+    .badge-danger {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .badge-neutral {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+
+    /* Views */
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* DQL & Console */
+    .sql-editor {
+      width: 100%;
+      min-height: 96px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 0.75rem;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      background: #0f172a;
+      color: #e2e8f0;
+      resize: vertical;
+    }
+
+    .pipe-preview {
+      background: #0f172a;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.6;
+    }
+
+    /* Alert Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 1000;
+      max-width: 380px;
+    }
+
+    .toast {
+      background: #0f172a;
+      color: #fff;
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      box-shadow: var(--shadow-md);
+      border-left: 4px solid var(--primary);
+      animation: slideIn 0.2s ease-out;
+    }
+
+    .toast.error {
+      border-left-color: var(--danger);
+    }
+
+    .toast.success {
+      border-left-color: var(--success);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 860px) {
+      .app-shell {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+      }
+      .nav-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+      }
+      .nav-label {
+        width: 100%;
+      }
+      .nav-btn {
+        width: auto;
+        flex: 1 1 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-title">
+          AIS-ERP Core
+          <span class="brand-badge">3NF RDBMS</span>
+        </div>
+        <div class="brand-sub">Sistem Informasi Akuntansi &amp; Kontrol</div>
+      </div>
+
+      <nav class="nav-group" aria-label="Menu Utama">
+        <div class="nav-label">Transaksi &amp; Buku Besar</div>
+        <button class="nav-btn active" data-view="view-invoices">
+          <span>Faktur Penjualan (AR)</span>
+          <span class="nav-count" id="badge-invoices">0</span>
+        </button>
+
+        <div class="nav-label">Data Master (3NF)</div>
+        <button class="nav-btn" data-view="view-customers">
+          <span>Master Pelanggan</span>
+          <span class="nav-count" id="badge-customers">0</span>
+        </button>
+        <button class="nav-btn" data-view="view-vendors">
+          <span>Master Pemasok (AP)</span>
+          <span class="nav-count" id="badge-vendors">0</span>
+        </button>
+
+        <div class="nav-label">Pelaporan &amp; Tata Kelola</div>
+        <button class="nav-btn" data-view="view-dql">
+          <span>DQL &amp; Report Writer</span>
+        </button>
+        <button class="nav-btn" data-view="view-audit">
+          <span>Audit Trail (DDL/DML/DQL)</span>
+          <span class="nav-count" id="badge-audit">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div><span class="status-dot"></span>Real-Time Processing Aktif</div>
+        <div style="margin-top: 4px;">Penyimpanan: Browser localStorage</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-area">
+      <header class="topbar">
+        <div>
+          <h1 class="page-title" id="header-title">Faktur Penjualan &amp; Pemrosesan Real-Time</h1>
+          <p class="page-desc" id="header-desc">Input transaksi penjualan dengan Closed-Loop Verification dan rekonsiliasi saldo piutang otomatis.</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-seed-demo">Muat Data Sampel</button>
+          <button class="btn btn-danger btn-sm" id="btn-reset-db">Reset Database</button>
+        </div>
+      </header>
+
+      <main class="content-container">
+        <!-- KPI Summary -->
+        <section class="kpi-grid" aria-label="Ringkasan Kontrol Akuntansi">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Piutang Usaha (AR)</div>
+            <div class="kpi-value" id="kpi-ar">Rp 0</div>
+            <div class="kpi-meta">Terekonsiliasi dengan Master Pelanggan</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total Penjualan Tercatat</div>
+            <div class="kpi-value" id="kpi-sales">Rp 0</div>
+            <div class="kpi-meta" id="kpi-invoice-count">0 Faktur Penjualan</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total Utang Pemasok (AP)</div>
+            <div class="kpi-value" id="kpi-ap">Rp 0</div>
+            <div class="kpi-meta" id="kpi-vendor-count">0 Pemasok Aktif</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Log Audit DBMS</div>
+            <div class="kpi-value" id="kpi-logs">0</div>
+            <div class="kpi-meta">Jejak Aktivitas DDL, DML &amp; DQL</div>
+          </div>
+        </section>
+
+        <!-- VIEW 1: INVOICES (CRUD + REAL-TIME AR RECONCILIATION) -->
+        <section id="view-invoices" class="view-section active">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title" id="invoice-form-title">Buat Faktur Penjualan Baru (DML: INSERT)</h2>
+              <button class="btn btn-secondary btn-sm" id="btn-cancel-invoice" style="display:none;">Batal Edit</button>
+            </div>
+            <div class="panel-body">
+              <div class="hint-box" id="closed-loop-box">
+                <strong>Closed-Loop Verification:</strong> Pilih ID Pelanggan untuk memverifikasi nama, limit kredit, dan saldo piutang saat ini sebelum memposting faktur.
+              </div>
+
+              <form id="form-invoice">
+                <input type="hidden" id="inv-edit-id" />
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="inv-id">No. Faktur (PK - Sequence Code)</label>
+                    <input type="text" id="inv-id" class="form-control mono" readonly required />
+                  </div>
+                  <div class="form-group">
+                    <label for="inv-date">Tanggal Transaksi</label>
+                    <input type="date" id="inv-date" class="form-control" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="inv-cust-id">Pelanggan (FK - Closed-Loop Check)</label>
+                    <select id="inv-cust-id" class="form-control" required>
+                      <option value="">-- Pilih Pelanggan Terdaftar --</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="inv-amount">Nominal Penjualan (Rp)</label>
+                    <input type="number" id="inv-amount" class="form-control mono" min="1" step="100" placeholder="Contoh: 1500000" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="inv-status">Status Pembayaran</label>
+                    <select id="inv-status" class="form-control" required>
+                      <option value="OPEN">OPEN (Menambah Piutang)</option>
+                      <option value="PAID">PAID (Lunas Tunai)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="inv-desc">Keterangan / Referensi Barang</label>
+                    <input type="text" id="inv-desc" class="form-control" maxlength="80" placeholder="Contoh: Pengadaan Bahan Baku Batch #1" required />
+                  </div>
+                </div>
+
+                <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                  <button type="submit" class="btn btn-primary" id="btn-save-invoice">Posting Faktur &amp; Perbarui Saldo</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Daftar Transaksi Faktur Penjualan</h2>
+              <input type="text" id="search-invoice" class="form-control" style="max-width: 260px;" placeholder="Cari No. Faktur atau Pelanggan..." />
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>No. Faktur</th>
+                    <th>Tanggal</th>
+                    <th>ID &amp; Nama Pelanggan</th>
+                    <th>Keterangan</th>
+                    <th class="text-right">Nominal (Rp)</th>
+                    <th>Status</th>
+                    <th class="text-right">Aksi CRUD</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-invoices"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 2: CUSTOMERS (CRUD + REFERENTIAL INTEGRITY) -->
+        <section id="view-customers" class="view-section">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title" id="cust-form-title">Tambah Master Pelanggan Baru</h2>
+              <button class="btn btn-secondary btn-sm" id="btn-cancel-cust" style="display:none;">Batal Edit</button>
+            </div>
+            <div class="panel-body">
+              <form id="form-customer">
+                <input type="hidden" id="cust-edit-id" />
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="cust-id">ID Pelanggan (Primary Key)</label>
+                    <input type="text" id="cust-id" class="form-control mono" placeholder="CUST-004" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="cust-name">Nama Perusahaan / Pelanggan</label>
+                    <input type="text" id="cust-name" class="form-control" maxlength="60" placeholder="PT Nusantara Sejahtera" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="cust-city">Kota / Wilayah</label>
+                    <input type="text" id="cust-city" class="form-control" maxlength="40" placeholder="Semarang" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="cust-limit">Batas Kredit / Credit Limit (Rp)</label>
+                    <input type="number" id="cust-limit" class="form-control mono" min="0" step="100000" placeholder="10000000" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="cust-balance">Saldo Piutang Awal (Rp)</label>
+                    <input type="number" id="cust-balance" class="form-control mono" min="0" step="100" value="0" required />
+                  </div>
+                </div>
+                <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+                  <button type="submit" class="btn btn-primary" id="btn-save-cust">Simpan Master Pelanggan</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Tabel Master Pelanggan (Accounts Receivable)</h2>
+              <span class="page-desc">Integritas Referensial: Pelanggan dengan faktur aktif tidak dapat dihapus.</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID Pelanggan</th>
+                    <th>Nama Pelanggan</th>
+                    <th>Kota</th>
+                    <th class="text-right">Batas Kredit (Rp)</th>
+                    <th class="text-right">Saldo Piutang (Rp)</th>
+                    <th>Utilisasi Limit</th>
+                    <th class="text-right">Aksi CRUD</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-customers"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 3: VENDORS (CRUD + PURGE INACTIVE VENDORS) -->
+        <section id="view-vendors" class="view-section">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title" id="vend-form-title">Tambah Master Pemasok Baru</h2>
+              <button class="btn btn-secondary btn-sm" id="btn-cancel-vend" style="display:none;">Batal Edit</button>
+            </div>
+            <div class="panel-body">
+              <form id="form-vendor">
+                <input type="hidden" id="vend-edit-id" />
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="vend-id">ID Pemasok (Primary Key)</label>
+                    <input type="text" id="vend-id" class="form-control mono" placeholder="VEND-004" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="vend-name">Nama Pemasok / Supplier</label>
+                    <input type="text" id="vend-name" class="form-control" maxlength="60" placeholder="CV Tani Makmur" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="vend-category">Kategori Pasokan</label>
+                    <input type="text" id="vend-category" class="form-control" maxlength="40" placeholder="Bahan Baku Pertanian" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="vend-balance">Saldo Utang Usaha (Rp)</label>
+                    <input type="number" id="vend-balance" class="form-control mono" min="0" step="100" value="0" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="vend-status">Status Pemasok</label>
+                    <select id="vend-status" class="form-control" required>
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="INACTIVE">INACTIVE</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+                  <button type="submit" class="btn btn-primary" id="btn-save-vend">Simpan Master Pemasok</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Tabel Master Pemasok (Accounts Payable)</h2>
+                <span class="page-desc">Pemeliharaan File: Hapus pemasok berstatus INACTIVE dengan saldo utang Rp 0.</span>
+              </div>
+              <button class="btn btn-warning btn-sm" id="btn-purge-vendors">Purge Inactive Vendors (Saldo = 0)</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID Pemasok</th>
+                    <th>Nama Pemasok</th>
+                    <th>Kategori</th>
+                    <th class="text-right">Saldo Utang (Rp)</th>
+                    <th>Status</th>
+                    <th class="text-right">Aksi CRUD</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-vendors"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 4: DQL & PIPE-DELIMITED REPORT WRITER -->
+        <section id="view-dql" class="view-section">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">DQL Console (Data Query Language Simulator)</h2>
+              <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                <button class="btn btn-secondary btn-sm preset-sql" data-sql="SELECT * FROM invoices JOIN customers">JOIN Faktur &amp; Pelanggan</button>
+                <button class="btn btn-secondary btn-sm preset-sql" data-sql="SELECT * FROM customers WHERE balance > 0">Piutang Aktif (&gt; 0)</button>
+                <button class="btn btn-secondary btn-sm preset-sql" data-sql="SELECT * FROM vendors WHERE status = INACTIVE">Pemasok Inaktif</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="form-group">
+                <label for="sql-input">Perintah Kueri (Mendukung: SELECT * FROM [invoices|customers|vendors] [JOIN customers] [WHERE field =/&gt;/&lt; value])</label>
+                <textarea id="sql-input" class="sql-editor">SELECT * FROM invoices JOIN customers</textarea>
+              </div>
+              <div style="margin-top: 0.75rem; display: flex; justify-content: flex-end;">
+                <button class="btn btn-primary" id="btn-run-sql">Jalankan Kueri DQL</button>
+              </div>
+
+              <div id="sql-result-container" style="margin-top: 1.25rem;"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Flat File Report Writer (Standar Pipe Delimiter `|`)</h2>
+                <span class="page-desc">Dilengkapi Header Record, Detail Records, dan Trailer Record (Record Count &amp; Hash Control Total).</span>
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <select id="export-entity" class="form-control" style="width:auto;">
+                  <option value="invoices">Tabel: INVOICES (Faktur)</option>
+                  <option value="customers">Tabel: CUSTOMERS (Pelanggan)</option>
+                  <option value="vendors">Tabel: VENDORS (Pemasok)</option>
+                </select>
+                <button class="btn btn-primary btn-sm" id="btn-download-pipe">Unduh File .TXT (Pipe)</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="pipe-preview" id="pipe-preview-box"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 5: AUDIT TRAIL -->
+        <section id="view-audit" class="view-section">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Log Audit Sistem &amp; Aktivitas DBMS</h2>
+                <span class="page-desc">Mencatat seluruh operasi DDL (Skema/Reset), DML (Insert/Update/Delete/Purge), dan DQL (Query/Export).</span>
+              </div>
+              <select id="filter-audit-type" class="form-control" style="width:auto;">
+                <option value="ALL">Semua Kategori (DDL / DML / DQL)</option>
+                <option value="DDL">DDL (Data Definition)</option>
+                <option value="DML">DML (Data Manipulation)</option>
+                <option value="DQL">DQL (Data Query)</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Waktu (Timestamp)</th>
+                    <th>Tipe</th>
+                    <th>Operasi</th>
+                    <th>Entitas</th>
+                    <th>Detail Perubahan / Kontrol</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-audit"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <script>
+    /**
+     * AIS-ERP Core - Single-File Relational Accounting Information System
+     * Mendukung 3NF State, Real-Time AR Reconciliation, Referential Integrity,
+     * Purge Inactive Vendors, DQL Console, Pipe-Delimited Flat File Export, & Audit Trail.
+     */
+    (function () {
+      const STORAGE_KEY = "ais_erp_core_db_v1";
+
+      // State Utama (Normalized 3NF Tables + Audit Logs)
+      let db = {
+        customers: [],
+        vendors: [],
+        invoices: [],
+        auditLogs: []
+      };
+
+      // Utilitas Keamanan & Formatting (XSS Sanitization)
+      function escapeHTML(str) {
+        if (str === null || str === undefined) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function formatIDR(num) {
+        const val = Number(num) || 0;
+        return "Rp " + val.toLocaleString("id-ID");
+      }
+
+      function getNowISO() {
+        const now = new Date();
+        return now.toLocaleString("id-ID", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+      }
+
+      function showToast(message, type = "info") {
+        const container = document.getElementById("toast-container");
+        const el = document.createElement("div");
+        el.className = `toast ${type}`;
+        el.textContent = message;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.remove();
+        }, 3600);
+      }
+
+      // Pencatatan Audit Trail (DDL, DML, DQL)
+      function logAudit(type, operation, entity, detail) {
+        db.auditLogs.unshift({
+          timestamp: getNowISO(),
+          type,
+          operation,
+          entity,
+          detail
+        });
+        if (db.auditLogs.length > 200) {
+          db.auditLogs.pop();
+        }
+      }
+
+      // Persistensi LocalStorage
+      function saveDB() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        } catch (err) {
+          showToast("Gagal menyimpan ke localStorage: " + err.message, "error");
+        }
+      }
+
+      function loadDB() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            if (parsed && Array.isArray(parsed.customers) && Array.isArray(parsed.invoices)) {
+              db = parsed;
+              return;
+            }
+          } catch (e) {
+            console.error("Corrupt storage, reinitializing...", e);
+          }
+        }
+        seedInitialData(false);
+      }
+
+      function seedInitialData(isManual = true) {
+        db.customers = [
+          { id: "CUST-001", name: "PT Sentosa Pangan Mandiri", city: "Semarang", creditLimit: 25000000, balance: 4500000 },
+          { id: "CUST-002", name: "CV Kopi Nusantara Jaya", city: "Yogyakarta", creditLimit: 15000000, balance: 2250000 },
+          { id: "CUST-003", name: "UD Berkah Kuliner", city: "Surakarta", creditLimit: 10000000, balance: 0 }
+        ];
+
+        db.vendors = [
+          { id: "VEND-001", name: "Koperasi Tani Merapi", category: "Hasil Bumi", balance: 3200000, status: "ACTIVE" },
+          { id: "VEND-002", name: "PT Kemasan Prima", category: "Kemasan & Logistik", balance: 1500000, status: "ACTIVE" },
+          { id: "VEND-003", name: "CV Rempah Lama", category: "Bumbu & Rempah", balance: 0, status: "INACTIVE" },
+          { id: "VEND-004", name: "UD Plastik Sejahtera", category: "Kemasan", balance: 0, status: "INACTIVE" }
+        ];
+
+        db.invoices = [
+          { id: "INV-2026-001", date: "2026-11-10", customerId: "CUST-001", amount: 4500000, status: "OPEN", description: "Pasokan Beras & Gula Aren Batch A" },
+          { id: "INV-2026-002", date: "2026-11-12", customerId: "CUST-002", amount: 2250000, status: "OPEN", description: "Biji Kopi Arabika Sangrai 30 Kg" },
+          { id: "INV-2026-003", date: "2026-11-15", customerId: "CUST-003", amount: 1800000, status: "PAID", description: "Paket Bahan Baku Katering (Lunas)" }
+        ];
+
+        db.auditLogs = [];
+        logAudit(
+          "DDL",
+          isManual ? "RELOAD_SAMPLE_SCHEMA" : "CREATE_SCHEMA_3NF",
+          "ALL_TABLES",
+          "Inisialisasi tabel 3NF: customers, vendors, invoices, auditLogs"
+        );
+        saveDB();
+        renderAll();
+        if (isManual) showToast("Data sampel berhasil dimuat & direkonsiliasi.", "success");
+      }
+
+      // Generate Nomor Faktur Urut (Sequence Code)
+      function generateNextInvoiceId() {
+        const year = new Date().getFullYear();
+        let maxNum = 0;
+        db.invoices.forEach(inv => {
+          const match = inv.id.match(/(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num > maxNum) maxNum = num;
+          }
+        });
+        return `INV-${year}-${String(maxNum + 1).padStart(3, "0")}`;
+      }
+
+      // Navigasi Tab
+      const viewMeta = {
+        "view-invoices": {
+          title: "Faktur Penjualan & Pemrosesan Real-Time",
+          desc: "Input transaksi penjualan dengan Closed-Loop Verification dan rekonsiliasi saldo piutang otomatis."
+        },
+        "view-customers": {
+          title: "Master Pelanggan (Accounts Receivable)",
+          desc: "Kelola data induk pelanggan, batas kredit, dan pemantauan saldo piutang usaha."
+        },
+        "view-vendors": {
+          title: "Master Pemasok (Accounts Payable)",
+          desc: "Kelola data pemasok dan jalankan prosedur pemeliharaan Purge Inactive Vendors."
+        },
+        "view-dql": {
+          title: "DQL Console & Pipe-Delimited Report Writer",
+          desc: "Eksekusi kueri relasional (SELECT / JOIN) dan ekspor flat file berstandar Pipe Delimiter (|)."
+        },
+        "view-audit": {
+          title: "Audit Trail & Kontrol Internal DBMS",
+          desc: "Rekam jejak kronologis seluruh aktivitas DDL, DML, dan DQL untuk kebutuhan audit sistem."
+        }
+      };
+
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const targetId = btn.getAttribute("data-view");
+          document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+          document.getElementById(targetId).classList.add("active");
+
+          if (viewMeta[targetId]) {
+            document.getElementById("header-title").textContent = viewMeta[targetId].title;
+            document.getElementById("header-desc").textContent = viewMeta[targetId].desc;
+          }
+
+          if (targetId === "view-dql") {
+            renderPipePreview();
+          }
+        });
+      });
+
+      // ==========================================
+      // MODUL 1: INVOICES (CRUD + REAL-TIME AR)
+      // ==========================================
+      const invCustSelect = document.getElementById("inv-cust-id");
+      const closedLoopBox = document.getElementById("closed-loop-box");
+
+      // Closed-Loop Verification saat memilih pelanggan
+      invCustSelect.addEventListener("change", () => {
+        const cid = invCustSelect.value;
+        const cust = db.customers.find(c => c.id === cid);
+        if (!cust) {
+          closedLoopBox.innerHTML = `<strong>Closed-Loop Verification:</strong> Pilih ID Pelanggan untuk memverifikasi nama, limit kredit, dan saldo piutang saat ini sebelum memposting faktur.`;
+          return;
+        }
+        const sisaLimit = cust.creditLimit - cust.balance;
+        closedLoopBox.innerHTML = `
+          <strong>Terverifikasi (Closed-Loop):</strong> ${escapeHTML(cust.name)} (${escapeHTML(cust.city)}) &bull;
+          Saldo Piutang Saat Ini: <strong>${formatIDR(cust.balance)}</strong> &bull;
+          Batas Kredit: <strong>${formatIDR(cust.creditLimit)}</strong> &bull;
+          Sisa Limit: <strong>${formatIDR(sisaLimit)}</strong>
+        `;
+      });
+
+      document.getElementById("form-invoice").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const editId = document.getElementById("inv-edit-id").value;
+        const id = document.getElementById("inv-id").value.trim();
+        const date = document.getElementById("inv-date").value;
+        const customerId = document.getElementById("inv-cust-id").value;
+        const amount = parseFloat(document.getElementById("inv-amount").value);
+        const status = document.getElementById("inv-status").value;
+        const description = document.getElementById("inv-desc").value.trim();
+
+        // Edit Checks (Field, Sign, Limit, Completeness)
+        if (!id || !date || !customerId || !description) {
+          showToast("Completeness Check Gagal: Semua field wajib diisi.", "error");
+          return;
+        }
+        if (isNaN(amount) || amount <= 0) {
+          showToast("Sign Check Gagal: Nominal penjualan harus lebih besar dari 0.", "error");
+          return;
+        }
+
+        const cust = db.customers.find(c => c.id === customerId);
+        if (!cust) {
+          showToast("Referential Integrity Error: Pelanggan tidak ditemukan.", "error");
+          return;
+        }
+
+        if (!editId) {
+          // INSERT Baru
+          const prevBalance = cust.balance;
+          const arImpact = status === "OPEN" ? amount : 0;
+
+          if (cust.balance + arImpact > cust.creditLimit) {
+            const proceed = confirm(
+              `Peringatan Limit Check: Saldo piutang baru (${formatIDR(cust.balance + arImpact)}) melebihi batas kredit (${formatIDR(cust.creditLimit)}). Tetap lanjutkan otorisasi?`
+            );
+            if (!proceed) return;
+          }
+
+          cust.balance += arImpact;
+          db.invoices.unshift({ id, date, customerId, amount, status, description });
+
+          logAudit(
+            "DML",
+            "INSERT_INVOICE",
+            "invoices & customers",
+            `Faktur ${id} (${formatIDR(amount)}, ${status}) untuk ${cust.id}. Saldo AR: ${formatIDR(prevBalance)} -> ${formatIDR(cust.balance)}`
+          );
+          showToast(`Faktur ${id} diposting. Saldo AR ${cust.name} diperbarui.`, "success");
+        } else {
+          // UPDATE Faktur & Rekonsiliasi Saldo Pelanggan Lama vs Baru
+          const existing = db.invoices.find(inv => inv.id === editId);
+          if (!existing) return;
+
+          // Kembalikan dampak saldo faktur lama
+          const oldCust = db.customers.find(c => c.id === existing.customerId);
+          if (oldCust && existing.status === "OPEN") {
+            oldCust.balance = Math.max(0, oldCust.balance - existing.amount);
+          }
+
+          // Terapkan dampak saldo faktur baru
+          const newArImpact = status === "OPEN" ? amount : 0;
+          cust.balance += newArImpact;
+
+          existing.date = date;
+          existing.customerId = customerId;
+          existing.amount = amount;
+          existing.status = status;
+          existing.description = description;
+
+          logAudit(
+            "DML",
+            "UPDATE_INVOICE",
+            "invoices & customers",
+            `Ubah faktur ${editId}: Nominal ${formatIDR(amount)}, Status ${status}. Saldo AR ${cust.id} terekonsiliasi menjadi ${formatIDR(cust.balance)}`
+          );
+          showToast(`Faktur ${editId} diperbarui & saldo piutang terekonsiliasi.`, "success");
+        }
+
+        resetInvoiceForm();
+        saveDB();
+        renderAll();
+      });
+
+      function resetInvoiceForm() {
+        document.getElementById("form-invoice").reset();
+        document.getElementById("inv-edit-id").value = "";
+        document.getElementById("inv-id").value = generateNextInvoiceId();
+        document.getElementById("inv-date").value = new Date().toISOString().split("T")[0];
+        document.getElementById("invoice-form-title").textContent = "Buat Faktur Penjualan Baru (DML: INSERT)";
+        document.getElementById("btn-save-invoice").textContent = "Posting Faktur & Perbarui Saldo";
+        document.getElementById("btn-cancel-invoice").style.display = "none";
+        closedLoopBox.innerHTML = `<strong>Closed-Loop Verification:</strong> Pilih ID Pelanggan untuk memverifikasi nama, limit kredit, dan saldo piutang saat ini sebelum memposting faktur.`;
+      }
+
+      document.getElementById("btn-cancel-invoice").addEventListener("click", resetInvoiceForm);
+
+      window.editInvoice = function (id) {
+        const inv = db.invoices.find(i => i.id === id);
+        if (!inv) return;
+        document.getElementById("inv-edit-id").value = inv.id;
+        document.getElementById("inv-id").value = inv.id;
+        document.getElementById("inv-date").value = inv.date;
+        document.getElementById("inv-cust-id").value = inv.customerId;
+        document.getElementById("inv-amount").value = inv.amount;
+        document.getElementById("inv-status").value = inv.status;
+        document.getElementById("inv-desc").value = inv.description;
+
+        document.getElementById("invoice-form-title").textContent = `Edit Faktur ${inv.id} (DML: UPDATE + Rekonsiliasi)`;
+        document.getElementById("btn-save-invoice").textContent = "Simpan Perubahan & Rekonsiliasi";
+        document.getElementById("btn-cancel-invoice").style.display = "inline-flex";
+        invCustSelect.dispatchEvent(new Event("change"));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      window.deleteInvoice = function (id) {
+        const idx = db.invoices.findIndex(i => i.id === id);
+        if (idx === -1) return;
+        const inv = db.invoices[idx];
+
+        if (!confirm(`Hapus faktur ${inv.id}? Jika berstatus OPEN, saldo piutang pelanggan akan dikurangi sebesar ${formatIDR(inv.amount)}.`)) {
+          return;
+        }
+
+        const cust = db.customers.find(c => c.id === inv.customerId);
+        if (cust && inv.status === "OPEN") {
+          cust.balance = Math.max(0, cust.balance - inv.amount);
+        }
+
+        db.invoices.splice(idx, 1);
+        logAudit(
+          "DML",
+          "DELETE_INVOICE",
+          "invoices & customers",
+          `Hapus faktur ${inv.id} (${formatIDR(inv.amount)}). Saldo AR ${inv.customerId} disesuaikan.`
+        );
+        saveDB();
+        renderAll();
+        showToast(`Faktur ${inv.id} dihapus & saldo piutang direkonsiliasi.`, "success");
+      };
+
+      document.getElementById("search-invoice").addEventListener("input", renderInvoicesTable);
+
+      // ==========================================
+      // MODUL 2: CUSTOMERS (CRUD + INTEGRITY)
+      // ==========================================
+      document.getElementById("form-customer").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const editId = document.getElementById("cust-edit-id").value;
+        const id = document.getElementById("cust-id").value.trim().toUpperCase();
+        const name = document.getElementById("cust-name").value.trim();
+        const city = document.getElementById("cust-city").value.trim();
+        const creditLimit = parseFloat(document.getElementById("cust-limit").value);
+        const balance = parseFloat(document.getElementById("cust-balance").value);
+
+        if (!id || !name || !city || isNaN(creditLimit) || isNaN(balance) || creditLimit < 0 || balance < 0) {
+          showToast("Validasi Gagal: Pastikan ID, nama, dan angka tidak bernilai negatif.", "error");
+          return;
+        }
+
+        if (!editId) {
+          if (db.customers.some(c => c.id === id)) {
+            showToast(`Primary Key Violation: ID Pelanggan ${id} sudah terdaftar.`, "error");
+            return;
+          }
+          db.customers.push({ id, name, city, creditLimit, balance });
+          logAudit("DML", "INSERT_CUSTOMER", "customers", `Tambah pelanggan ${id} - ${name} (Limit: ${formatIDR(creditLimit)})`);
+          showToast(`Pelanggan ${name} berhasil ditambahkan.`, "success");
+        } else {
+          const cust = db.customers.find(c => c.id === editId);
+          if (!cust) return;
+          cust.name = name;
+          cust.city = city;
+          cust.creditLimit = creditLimit;
+          cust.balance = balance;
+          logAudit("DML", "UPDATE_CUSTOMER", "customers", `Perbarui data pelanggan ${editId} - ${name}`);
+          showToast(`Data pelanggan ${editId} diperbarui.`, "success");
+        }
+
+        resetCustomerForm();
+        saveDB();
+        renderAll();
+      });
+
+      function resetCustomerForm() {
+        document.getElementById("form-customer").reset();
+        document.getElementById("cust-edit-id").value = "";
+        document.getElementById("cust-id").readOnly = false;
+        document.getElementById("cust-form-title").textContent = "Tambah Master Pelanggan Baru";
+        document.getElementById("btn-save-cust").textContent = "Simpan Master Pelanggan";
+        document.getElementById("btn-cancel-cust").style.display = "none";
+      }
+
+      document.getElementById("btn-cancel-cust").addEventListener("click", resetCustomerForm);
+
+      window.editCustomer = function (id) {
+        const cust = db.customers.find(c => c.id === id);
+        if (!cust) return;
+        document.getElementById("cust-edit-id").value = cust.id;
+        document.getElementById("cust-id").value = cust.id;
+        document.getElementById("cust-id").readOnly = true;
+        document.getElementById("cust-name").value = cust.name;
+        document.getElementById("cust-city").value = cust.city;
+        document.getElementById("cust-limit").value = cust.creditLimit;
+        document.getElementById("cust-balance").value = cust.balance;
+
+        document.getElementById("cust-form-title").textContent = `Edit Pelanggan ${cust.id}`;
+        document.getElementById("btn-save-cust").textContent = "Perbarui Master Pelanggan";
+        document.getElementById("btn-cancel-cust").style.display = "inline-flex";
+      };
+
+      window.deleteCustomer = function (id) {
+        // Referential Integrity Check
+        const hasInvoices = db.invoices.some(inv => inv.customerId === id);
+        if (hasInvoices) {
+          showToast(`Referential Integrity Error: Pelanggan ${id} memiliki riwayat faktur dan tidak dapat dihapus.`, "error");
+          logAudit("DML", "DELETE_REJECTED", "customers", `Penghapusan ${id} ditolak karena melanggar integritas referensial (masih ada faktur).`);
+          saveDB();
+          renderAuditTable();
+          return;
+        }
+
+        const idx = db.customers.findIndex(c => c.id === id);
+        if (idx === -1) return;
+        const removed = db.customers.splice(idx, 1)[0];
+        logAudit("DML", "DELETE_CUSTOMER", "customers", `Hapus master pelanggan ${removed.id} - ${removed.name}`);
+        saveDB();
+        renderAll();
+        showToast(`Pelanggan ${removed.id} dihapus.`, "success");
+      };
+
+      // ==========================================
+      // MODUL 3: VENDORS (CRUD + PURGE INACTIVE)
+      // ==========================================
+      document.getElementById("form-vendor").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const editId = document.getElementById("vend-edit-id").value;
+        const id = document.getElementById("vend-id").value.trim().toUpperCase();
+        const name = document.getElementById("vend-name").value.trim();
+        const category = document.getElementById("vend-category").value.trim();
+        const balance = parseFloat(document.getElementById("vend-balance").value);
+        const status = document.getElementById("vend-status").value;
+
+        if (!id || !name || !category || isNaN(balance) || balance < 0) {
+          showToast("Validasi Gagal: Periksa kembali isian pemasok.", "error");
+          return;
+        }
+
+        if (!editId) {
+          if (db.vendors.some(v => v.id === id)) {
+            showToast(`Primary Key Violation: ID Pemasok ${id} sudah ada.`, "error");
+            return;
+          }
+          db.vendors.push({ id, name, category, balance, status });
+          logAudit("DML", "INSERT_VENDOR", "vendors", `Tambah pemasok ${id} - ${name} (${status})`);
+          showToast(`Pemasok ${name} ditambahkan.`, "success");
+        } else {
+          const vend = db.vendors.find(v => v.id === editId);
+          if (!vend) return;
+          vend.name = name;
+          vend.category = category;
+          vend.balance = balance;
+          vend.status = status;
+          logAudit("DML", "UPDATE_VENDOR", "vendors", `Perbarui pemasok ${editId} - ${name} (${status})`);
+          showToast(`Pemasok ${editId} diperbarui.`, "success");
+        }
+
+        resetVendorForm();
+        saveDB();
+        renderAll();
+      });
+
+      function resetVendorForm() {
+        document.getElementById("form-vendor").reset();
+        document.getElementById("vend-edit-id").value = "";
+        document.getElementById("vend-id").readOnly = false;
+        document.getElementById("vend-form-title").textContent = "Tambah Master Pemasok Baru";
+        document.getElementById("btn-save-vend").textContent = "Simpan Master Pemasok";
+        document.getElementById("btn-cancel-vend").style.display = "none";
+      }
+
+      document.getElementById("btn-cancel-vend").addEventListener("click", resetVendorForm);
+
+      window.editVendor = function (id) {
+        const vend = db.vendors.find(v => v.id === id);
+        if (!vend) return;
+        document.getElementById("vend-edit-id").value = vend.id;
+        document.getElementById("vend-id").value = vend.id;
+        document.getElementById("vend-id").readOnly = true;
+        document.getElementById("vend-name").value = vend.name;
+        document.getElementById("vend-category").value = vend.category;
+        document.getElementById("vend-balance").value = vend.balance;
+        document.getElementById("vend-status").value = vend.status;
+
+        document.getElementById("vend-form-title").textContent = `Edit Pemasok ${vend.id}`;
+        document.getElementById("btn-save-vend").textContent = "Perbarui Master Pemasok";
+        document.getElementById("btn-cancel-vend").style.display = "inline-flex";
+      };
+
+      window.deleteVendor = function (id) {
+        const idx = db.vendors.findIndex(v => v.id === id);
+        if (idx === -1) return;
+        const vend = db.vendors[idx];
+        if (vend.balance > 0) {
+          showToast(`Kontrol Internal: Pemasok ${id} masih memiliki saldo utang ${formatIDR(vend.balance)}.`, "error");
+          return;
+        }
+        db.vendors.splice(idx, 1);
+        logAudit("DML", "DELETE_VENDOR", "vendors", `Hapus pemasok ${vend.id} - ${vend.name}`);
+        saveDB();
+        renderAll();
+        showToast(`Pemasok ${vend.id} dihapus.`, "success");
+      };
+
+      // Purge Inactive Vendors (Batch File Maintenance)
+      document.getElementById("btn-purge-vendors").addEventListener("click", () => {
+        const candidates = db.vendors.filter(v => v.status === "INACTIVE" && Number(v.balance) === 0);
+        if (candidates.length === 0) {
+          showToast("Tidak ada pemasok berstatus INACTIVE dengan saldo Rp 0 untuk di-purge.", "info");
+          return;
+        }
+
+        const ids = candidates.map(c => c.id).join(", ");
+        if (!confirm(`Jalankan Purge terhadap ${candidates.length} pemasok tidak aktif bersaldo Rp 0 (${ids})?`)) {
+          return;
+        }
+
+        db.vendors = db.vendors.filter(v => !(v.status === "INACTIVE" && Number(v.balance) === 0));
+        logAudit(
+          "DML",
+          "PURGE_INACTIVE_VENDORS",
+          "vendors",
+          `Menghapus ${candidates.length} pemasok INACTIVE bersaldo Rp 0: [${ids}]`
+        );
+        saveDB();
+        renderAll();
+        showToast(`Purge selesai: ${candidates.length} pemasok tidak aktif telah dibersihkan.`, "success");
+      });
+
+      // ==========================================
+      // MODUL 4: DQL CONSOLE & PIPE REPORT WRITER
+      // ==========================================
+      document.querySelectorAll(".preset-sql").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.getElementById("sql-input").value = btn.getAttribute("data-sql");
+          executeDQL();
+        });
+      });
+
+      document.getElementById("btn-run-sql").addEventListener("click", executeDQL);
+
+      function executeDQL() {
+        const rawQuery = document.getElementById("sql-input").value.trim();
+        const resultContainer = document.getElementById("sql-result-container");
+
+        // Parser DQL Ringan & Aman (Hanya SELECT)
+        const match = rawQuery.match(
+          /^SELECT\s+\*\s+FROM\s+(invoices|customers|vendors)(?:\s+JOIN\s+customers)?(?:\s+WHERE\s+([a-zA-Z0-9_]+)\s*(=|>|<|>=|<=)\s*['"]?([^'"]+)['"]?)?$/i
+        );
+
+        if (!match) {
+          resultContainer.innerHTML = `<div class="hint-box" style="background:var(--danger-soft);border-color:#fecaca;color:var(--danger);">
+            Sintaks DQL tidak dikenali. Gunakan pola: <code>SELECT * FROM [invoices|customers|vendors] [JOIN customers] [WHERE field =/&gt;/&lt; value]</code>
+          </div>`;
+          return;
+        }
+
+        const tableName = match[1].toLowerCase();
+        const hasJoin = /JOIN\s+customers/i.test(rawQuery);
+        const whereField = match[2];
+        const whereOp = match[3];
+        const whereVal = match[4];
+
+        let rows = JSON.parse(JSON.stringify(db[tableName] || []));
+
+        // Terapkan Relasi JOIN jika invoices JOIN customers
+        if (tableName === "invoices" && hasJoin) {
+          rows = rows.map(inv => {
+            const cust = db.customers.find(c => c.id === inv.customerId) || {};
+            return {
+              invoice_id: inv.id,
+              date: inv.date,
+              customer_id: inv.customerId,
+              customer_name: cust.name || "UNKNOWN",
+              city: cust.city || "-",
+              amount: inv.amount,
+              status: inv.status,
+              current_ar_balance: cust.balance ?? 0
+            };
+          });
+        }
+
+        // Terapkan Filter WHERE
+        if (whereField && whereOp && whereVal !== undefined) {
+          rows = rows.filter(row => {
+            const cell = row[whereField];
+            if (cell === undefined) return false;
+            const numCell = Number(cell);
+            const numVal = Number(whereVal);
+            const isNumeric = !isNaN(numCell) && !isNaN(numVal);
+
+            if (whereOp === "=") return String(cell).toLowerCase() === String(whereVal).toLowerCase();
+            if (whereOp === ">") return isNumeric ? numCell > numVal : String(cell) > String(whereVal);
+            if (whereOp === "<") return isNumeric ? numCell < numVal : String(cell) < String(whereVal);
+            if (whereOp === ">=") return isNumeric ? numCell >= numVal : String(cell) >= String(whereVal);
+            if (whereOp === "<=") return isNumeric ? numCell <= numVal : String(cell) <= String(whereVal);
+            return false;
+          });
+        }
+
+        logAudit("DQL", "EXECUTE_SELECT", tableName, `Kueri: "${rawQuery}" -> ${rows.length} baris dihasilkan.`);
+        saveDB();
+        renderAuditTable();
+        updateKPIs();
+
+        if (rows.length === 0) {
+          resultContainer.innerHTML = `<p class="page-desc">Kueri berhasil dieksekusi, namun mengembalikan 0 baris data.</p>`;
+          return;
+        }
+
+        const headers = Object.keys(rows[0]);
+        let html = `<div class="table-wrap"><table><thead><tr>`;
+        headers.forEach(h => {
+          html += `<th>${escapeHTML(h)}</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+        rows.forEach(r => {
+          html += `<tr>`;
+          headers.forEach(h => {
+            const val = r[h];
+            const formatted = typeof val === "number" && (h.includes("amount") || h.includes("balance") || h.includes("Limit"))
+              ? formatIDR(val)
+              : escapeHTML(val);
+            html += `<td class="mono">${formatted}</td>`;
+          });
+          html += `</tr>`;
+        });
+        html += `</tbody></table></div>`;
+        resultContainer.innerHTML = html;
+      }
+
+      // Generator Flat File Pipe-Delimited (`|`) dengan Header & Trailer Control Totals
+      function buildPipeFileContent(entity) {
+        const records = db[entity] || [];
+        const timestamp = new Date().toISOString();
+        const lines = [];
+
+        // Header Record
+        lines.push(`HDR|AIS-ERP-CORE|TABLE:${entity.toUpperCase()}|GENERATED:${timestamp}`);
+
+        let hashTotal = 0;
+
+        if (entity === "invoices") {
+          lines.push(`COL|INVOICE_ID|DATE|CUSTOMER_ID|AMOUNT|STATUS|DESCRIPTION`);
+          records.forEach(r => {
+            hashTotal += Number(r.amount) || 0;
+            lines.push(`DTL|${r.id}|${r.date}|${r.customerId}|${r.amount}|${r.status}|${r.description.replace(/\|/g, "/")}`);
+          });
+        } else if (entity === "customers") {
+          lines.push(`COL|CUSTOMER_ID|NAME|CITY|CREDIT_LIMIT|AR_BALANCE`);
+          records.forEach(r => {
+            hashTotal += Number(r.balance) || 0;
+            lines.push(`DTL|${r.id}|${r.name.replace(/\|/g, "/")}|${r.city}|${r.creditLimit}|${r.balance}`);
+          });
+        } else if (entity === "vendors") {
+          lines.push(`COL|VENDOR_ID|NAME|CATEGORY|AP_BALANCE|STATUS`);
+          records.forEach(r => {
+            hashTotal += Number(r.balance) || 0;
+            lines.push(`DTL|${r.id}|${r.name.replace(/\|/g, "/")}|${r.category}|${r.balance}|${r.status}`);
+          });
+        }
+
+        // Trailer Control Record (Record Count + Financial Control Total)
+        lines.push(`TRL|RECORD_COUNT:${records.length}|CONTROL_SUM:${hashTotal}|END_OF_FILE`);
+        return lines.join("\n");
+      }
+
+      function renderPipePreview() {
+        const entity = document.getElementById("export-entity").value;
+        document.getElementById("pipe-preview-box").textContent = buildPipeFileContent(entity);
+      }
+
+      document.getElementById("export-entity").addEventListener("change", renderPipePreview);
+
+      document.getElementById("btn-download-pipe").addEventListener("click", () => {
+        const entity = document.getElementById("export-entity").value;
+        const content = buildPipeFileContent(entity);
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `AIS_EXPORT_${entity.toUpperCase()}_${new Date().toISOString().slice(0, 10)}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        logAudit("DQL", "EXPORT_PIPE_FLATFILE", entity, `Unduh laporan flat file pipe-delimited (${db[entity].length} record)`);
+        saveDB();
+        renderAuditTable();
+        updateKPIs();
+        showToast(`File flat file ${entity}.txt berhasil diunduh.`, "success");
+      });
+
+      // ==========================================
+      // RENDERING UI & RECONCILIATION KPI
+      // ==========================================
+      function updateKPIs() {
+        const totalAR = db.customers.reduce((acc, c) => acc + (Number(c.balance) || 0), 0);
+        const totalSales = db.invoices.reduce((acc, i) => acc + (Number(i.amount) || 0), 0);
+        const totalAP = db.vendors.reduce((acc, v) => acc + (Number(v.balance) || 0), 0);
+        const activeVendors = db.vendors.filter(v => v.status === "ACTIVE").length;
+
+        document.getElementById("kpi-ar").textContent = formatIDR(totalAR);
+        document.getElementById("kpi-sales").textContent = formatIDR(totalSales);
+        document.getElementById("kpi-invoice-count").textContent = `${db.invoices.length} Faktur Penjualan`;
+        document.getElementById("kpi-ap").textContent = formatIDR(totalAP);
+        document.getElementById("kpi-vendor-count").textContent = `${activeVendors} Pemasok Aktif (${db.vendors.length} Total)`;
+        document.getElementById("kpi-logs").textContent = db.auditLogs.length;
+
+        document.getElementById("badge-invoices").textContent = db.invoices.length;
+        document.getElementById("badge-customers").textContent = db.customers.length;
+        document.getElementById("badge-vendors").textContent = db.vendors.length;
+        document.getElementById("badge-audit").textContent = db.auditLogs.length;
+      }
+
+      function renderCustomerDropdown() {
+        const currentVal = invCustSelect.value;
+        invCustSelect.innerHTML = `<option value="">-- Pilih Pelanggan Terdaftar --</option>`;
+        db.customers.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;
+          opt.textContent = `${c.id} - ${c.name} (Piutang: ${formatIDR(c.balance)})`;
+          invCustSelect.appendChild(opt);
+        });
+        if (db.customers.some(c => c.id === currentVal)) {
+          invCustSelect.value = currentVal;
+        }
+      }
+
+      function renderInvoicesTable() {
+        const query = document.getElementById("search-invoice").value.toLowerCase().trim();
+        const tbody = document.getElementById("tbody-invoices");
+        tbody.innerHTML = "";
+
+        const filtered = db.invoices.filter(inv => {
+          const cust = db.customers.find(c => c.id === inv.customerId);
+          const custName = cust ? cust.name.toLowerCase() : "";
+          return (
+            inv.id.toLowerCase().includes(query) ||
+            inv.customerId.toLowerCase().includes(query) ||
+            custName.includes(query) ||
+            inv.description.toLowerCase().includes(query)
+          );
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:1.5rem;">Belum ada data faktur yang sesuai.</td></tr>`;
+          return;
+        }
+
+        filtered.forEach(inv => {
+          const cust = db.customers.find(c => c.id === inv.customerId);
+          const custLabel = cust ? `${escapeHTML(cust.id)} - ${escapeHTML(cust.name)}` : escapeHTML(inv.customerId);
+          const badgeClass = inv.status === "OPEN" ? "badge-warning" : "badge-success";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="mono"><strong>${escapeHTML(inv.id)}</strong></td>
+            <td class="mono">${escapeHTML(inv.date)}</td>
+            <td>${custLabel}</td>
+            <td>${escapeHTML(inv.description)}</td>
+            <td class="text-right mono">${formatIDR(inv.amount)}</td>
+            <td><span class="badge ${badgeClass}">${escapeHTML(inv.status)}</span></td>
+            <td class="text-right">
+              <button class="btn btn-secondary btn-sm" onclick="editInvoice('${escapeHTML(inv.id)}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteInvoice('${escapeHTML(inv.id)}')">Hapus</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderCustomersTable() {
+        const tbody = document.getElementById("tbody-customers");
+        tbody.innerHTML = "";
+
+        if (db.customers.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:1.5rem;">Belum ada master pelanggan.</td></tr>`;
+          return;
+        }
+
+        db.customers.forEach(c => {
+          const pct = c.creditLimit > 0 ? Math.round((c.balance / c.creditLimit) * 100) : 0;
+          const badgeClass = pct > 100 ? "badge-danger" : pct >= 80 ? "badge-warning" : "badge-success";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="mono"><strong>${escapeHTML(c.id)}</strong></td>
+            <td>${escapeHTML(c.name)}</td>
+            <td>${escapeHTML(c.city)}</td>
+            <td class="text-right mono">${formatIDR(c.creditLimit)}</td>
+            <td class="text-right mono"><strong>${formatIDR(c.balance)}</strong></td>
+            <td><span class="badge ${badgeClass}">${pct}% Limit</span></td>
+            <td class="text-right">
+              <button class="btn btn-secondary btn-sm" onclick="editCustomer('${escapeHTML(c.id)}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteCustomer('${escapeHTML(c.id)}')">Hapus</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderVendorsTable() {
+        const tbody = document.getElementById("tbody-vendors");
+        tbody.innerHTML = "";
+
+        if (db.vendors.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1.5rem;">Belum ada master pemasok.</td></tr>`;
+          return;
+        }
+
+        db.vendors.forEach(v => {
+          const badgeClass = v.status === "ACTIVE" ? "badge-success" : "badge-neutral";
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="mono"><strong>${escapeHTML(v.id)}</strong></td>
+            <td>${escapeHTML(v.name)}</td>
+            <td>${escapeHTML(v.category)}</td>
+            <td class="text-right mono">${formatIDR(v.balance)}</td>
+            <td><span class="badge ${badgeClass}">${escapeHTML(v.status)}</span></td>
+            <td class="text-right">
+              <button class="btn btn-secondary btn-sm" onclick="editVendor('${escapeHTML(v.id)}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteVendor('${escapeHTML(v.id)}')">Hapus</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderAuditTable() {
+        const filterType = document.getElementById("filter-audit-type").value;
+        const tbody = document.getElementById("tbody-audit");
+        tbody.innerHTML = "";
+
+        const logs = db.auditLogs.filter(l => filterType === "ALL" || l.type === filterType);
+
+        if (logs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;">Belum ada rekaman log pada kategori ini.</td></tr>`;
+          return;
+        }
+
+        logs.forEach(l => {
+          let badgeClass = "badge-neutral";
+          if (l.type === "DDL") badgeClass = "badge-warning";
+          if (l.type === "DML") badgeClass = "badge-success";
+          if (l.type === "DQL") badgeClass = "badge-danger";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="mono" style="font-size:0.78rem;">${escapeHTML(l.timestamp)}</td>
+            <td><span class="badge ${badgeClass}">${escapeHTML(l.type)}</span></td>
+            <td class="mono"><strong>${escapeHTML(l.operation)}</strong></td>
+            <td class="mono">${escapeHTML(l.entity)}</td>
+            <td style="white-space:normal;min-width:260px;">${escapeHTML(l.detail)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById("filter-audit-type").addEventListener("change", renderAuditTable);
+
+      // Tombol Global Header
+      document.getElementById("btn-seed-demo").addEventListener("click", () => {
+        if (confirm("Muat ulang data sampel awal? Data saat ini akan diganti dengan dataset demonstrasi.")) {
+          seedInitialData(true);
+          resetInvoiceForm();
+        }
+      });
+
+      document.getElementById("btn-reset-db").addEventListener("click", () => {
+        if (confirm("Kosongkan seluruh tabel transaksi dan master database?")) {
+          db = { customers: [], vendors: [], invoices: [], auditLogs: [] };
+          logAudit("DDL", "TRUNCATE_ALL_TABLES", "ALL_TABLES", "Seluruh tabel dikosongkan oleh pengguna.");
+          saveDB();
+          resetInvoiceForm();
+          renderAll();
+          showToast("Database berhasil dikosongkan.", "info");
+        }
+      });
+
+      function renderAll() {
+        updateKPIs();
+        renderCustomerDropdown();
+        renderInvoicesTable();
+        renderCustomersTable();
+        renderVendorsTable();
+        renderAuditTable();
+        renderPipePreview();
+      }
+
+      // Bootstrap Aplikasi
+      loadDB();
+      resetInvoiceForm();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
